@@ -29,7 +29,38 @@ XGBoost achieved improved performance over the baseline:
 ## Key Insight
 Temperature is the most influential feature, followed by wind speed and solar radiation.
 
+## 🌐 Web Interface
+
+Try the interactive web app to predict air quality in real-time!
+
+### Running Locally
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+Visit `http://localhost:7860` in your browser.
+
+### Deployment
+This app can be deployed on:
+- **Hugging Face Spaces** (recommended for Gradio)
+- **Google Colab**
+- **Railway**
+- **Render**
+
+### Using the App
+1. Adjust the input sliders for weather conditions
+2. Click "Predict Air Quality" to get the predicted ozone level
+3. View the air quality category and health advisory
+
 ## Usage
-Example prediction:
+
+### Web Interface (Recommended)
+Use the interactive Gradio app by running `python app.py` and visit http://localhost:7860
+
+### Programmatic Usage
+Once a trained model is integrated, you can use it programmatically:
 ```python
-predict_aqi(200, 5, 80, 7, 200)
+# Example with future trained model
+from app import predict_air_quality
+result = predict_air_quality(solar_radiation=200, wind_speed=10, temperature=80, month=7, day=15)
