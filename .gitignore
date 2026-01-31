@@ -205,3 +205,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Model files (until real model is added)
+*.pkl
+*.joblib
+*.h5
+
+# Gradio
+gradio_cached_examples/
+flagged/
