@@ -1,3 +1,14 @@
+---
+title: Delhi Air Quality Predictor
+emoji: 🌍
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 4.0.0
+app_file: app.py
+pinned: false
+---
+
 # Delhi Air Quality Predictor
 
 Air quality (AQI proxy) prediction using machine learning models.
