@@ -59,6 +59,8 @@ This app can be deployed on:
 Use the interactive Gradio app by running `python app.py` and visit http://localhost:7860
 
 ### Programmatic Usage
-Example prediction:
+Once a trained model is integrated, you can use it programmatically:
 ```python
-predict_aqi(200, 5, 80, 7, 200)
+# Example with future trained model
+from app import predict_air_quality
+result = predict_air_quality(solar_radiation=200, wind_speed=10, temperature=80, month=7, day=15)

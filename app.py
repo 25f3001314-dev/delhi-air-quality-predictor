@@ -228,8 +228,12 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="green")) 
         *Note: While the training dataset is from NYC (1973), the model principles apply universally to urban air quality prediction including Delhi.*
         
         ### Performance (Target with Real Model)
+        
+        **Target metrics when real XGBoost model is integrated:**
         - R² Score: 0.73
         - MAE: 12.17 ppb
+        
+        *Current version uses a demonstration formula for educational purposes.*
         """
     )
 
