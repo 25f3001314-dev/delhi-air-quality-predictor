@@ -50,7 +50,7 @@ This app can be deployed on:
 
 ### Using the App
 1. Adjust the input sliders for weather conditions
-2. Click "Submit" to get the predicted ozone level
+2. Click "Predict Air Quality" to get the predicted ozone level
 3. View the air quality category and health advisory
 
 ## Usage
