@@ -53,6 +53,16 @@ This app can be deployed on:
 2. Click "Predict Air Quality" to get the predicted ozone level
 3. View the air quality category and health advisory
 
+## 🚀 Deployment
+
+### Live Demo
+🌐 **Try it live:** https://huggingface.co/spaces/25f3001314/Bachao
+
+### Auto-Deploy
+This repository automatically syncs to Hugging Face Spaces on every push to main branch using GitHub Actions.
+
+See [.github/SYNC_SETUP.md](.github/SYNC_SETUP.md) for setup details.
+
 ## Usage
 
 ### Web Interface (Recommended)
