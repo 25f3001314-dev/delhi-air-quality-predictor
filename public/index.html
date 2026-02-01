@@ -481,6 +481,22 @@
             "ITO": [28.6281, 77.2419]
         };
         
+        // Sanitize text content to prevent XSS
+        function sanitizeText(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Validate and sanitize color value
+        function sanitizeColor(color) {
+            // Only allow hex colors
+            if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                return color;
+            }
+            return '#999999'; // Default gray for invalid colors
+        }
+        
         function initMap() {
             // Initialize map centered on Delhi
             map = L.map('delhiMap').setView([28.6139, 77.2090], 11);
@@ -502,10 +518,20 @@
                 const coords = stationLocations[station.name];
                 if (!coords) return;
                 
+                // Sanitize values
+                const safeColor = sanitizeColor(station.color);
+                const safeAqi = sanitizeText(String(station.aqi));
+                const safeName = sanitizeText(station.name);
+                const safeCategory = sanitizeText(station.category);
+                const safePm25 = sanitizeText(String(station.pm25));
+                const safePm10 = sanitizeText(String(station.pm10));
+                const safeO3 = sanitizeText(String(station.o3));
+                const safeNo2 = sanitizeText(String(station.no2));
+                
                 // Create custom icon with AQI color
                 const iconHtml = `
                     <div style="
-                        background: ${station.color};
+                        background: ${safeColor};
                         width: 40px;
                         height: 40px;
                         border-radius: 50%;
@@ -518,7 +544,7 @@
                         color: white;
                         font-size: 14px;
                     ">
-                        ${station.aqi}
+                        ${safeAqi}
                     </div>
                 `;
                 
@@ -532,14 +558,14 @@
                 
                 // Create popup content
                 const popupContent = `
-                    <div class="popup-title">${station.name}</div>
-                    <div class="popup-aqi" style="color: ${station.color};">${station.aqi}</div>
-                    <div class="popup-category">${station.category}</div>
+                    <div class="popup-title">${safeName}</div>
+                    <div class="popup-aqi" style="color: ${safeColor};">${safeAqi}</div>
+                    <div class="popup-category">${safeCategory}</div>
                     <div class="popup-details">
-                        <strong>PM2.5:</strong> ${station.pm25} µg/m³<br>
-                        <strong>PM10:</strong> ${station.pm10} µg/m³<br>
-                        <strong>O₃:</strong> ${station.o3}<br>
-                        <strong>NO₂:</strong> ${station.no2}
+                        <strong>PM2.5:</strong> ${safePm25} µg/m³<br>
+                        <strong>PM10:</strong> ${safePm10} µg/m³<br>
+                        <strong>O₃:</strong> ${safeO3}<br>
+                        <strong>NO₂:</strong> ${safeNo2}
                     </div>
                 `;
                 
