@@ -1,5 +1,4 @@
 {
-  "version": 2,
   "env": {
     "AQI_API_KEY": "@aqi_api_key"
   }
