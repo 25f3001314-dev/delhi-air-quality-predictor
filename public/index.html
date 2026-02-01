@@ -277,7 +277,6 @@
 <body>
     <div class="container">
         <h1>🌍 Delhi Air Quality Monitor</h1>
-        <p class="subtitle">Live Environmental Dashboard</p>
         
         <div id="loading" class="loading">
             <div class="spinner"></div>
@@ -316,12 +315,6 @@
                 </div>
             </div>
             
-            <!-- Weather -->
-            <div class="weather-card">
-                <h2 style="color: #333; margin-bottom: 10px; font-size: 1.2em;">🌤️ Weather Conditions</h2>
-                <div class="weather-grid" id="weatherGrid"></div>
-            </div>
-            
             <!-- Stations -->
             <h2 style="color: white; margin: 15px 0 10px; text-align: center; font-size: 1.3em;">📍 Metro Station Monitoring</h2>
             <div class="stations-grid" id="stationsGrid"></div>
@@ -329,16 +322,14 @@
             <!-- Charts -->
             <div class="charts-container">
                 <div class="chart-card">
-                    <div class="chart-title">📊 Horizontal Comparison</div>
+                    <div class="chart-title">📊 Station AQI Comparison</div>
                     <canvas id="barChart"></canvas>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-title">🥧 Distribution Chart</div>
+                    <div class="chart-title">☠️ Hazardous Gases Concentration</div>
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
-            
-            <button class="button" onclick="fetchData()">🔄 Refresh Data</button>
             
             <div class="timestamp" id="timestamp"></div>
         </div>
@@ -369,7 +360,6 @@
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    displayWeather(data.weather);
                     displayStations(data.stations);
                     updateBarChart(data.stations);
                     updatePieChart(data.stations);
@@ -386,28 +376,6 @@
                 error.textContent = '❌ Error: ' + err.message;
                 loading.style.display = 'none';
             }
-        }
-        
-        function displayWeather(weather) {
-            const grid = document.getElementById('weatherGrid');
-            grid.innerHTML = `
-                <div class="weather-item">
-                    <div class="weather-label">🌡️ Temperature</div>
-                    <div class="weather-value">${weather.temperature}°C</div>
-                </div>
-                <div class="weather-item">
-                    <div class="weather-label">💧 Humidity</div>
-                    <div class="weather-value">${weather.humidity}%</div>
-                </div>
-                <div class="weather-item">
-                    <div class="weather-label">💨 Wind Speed</div>
-                    <div class="weather-value">${weather.wind_speed} km/h</div>
-                </div>
-                <div class="weather-item">
-                    <div class="weather-label">🧭 Wind Dir</div>
-                    <div class="weather-value">${weather.wind_direction}°</div>
-                </div>
-            `;
         }
         
         function displayStations(stations) {
@@ -520,27 +488,68 @@
                                     size: 11
                                 }
                             }
-                        }
-                    }
-                }
+            // Calculate average gas concentrations across all stations
+            let totalPM25 = 0, totalPM10 = 0, totalO3 = 0, totalNO2 = 0, totalCO = 0;
+            let count = 0;
+            
+            stations.forEach(station => {
+                if (station.pm25 !== 'N/A') totalPM25 += parseFloat(station.pm25);
+                if (station.pm10 !== 'N/A') totalPM10 += parseFloat(station.pm10);
+                if (station.o3 !== 'N/A') totalO3 += parseFloat(station.o3);
+                if (station.no2 !== 'N/A') totalNO2 += parseFloat(station.no2);
+                if (station.co !== 'N/A') totalCO += parseFloat(station.co);
+                count++;
             });
-        }
-        
-        window.addEventListener('load', fetchData);
-        setInterval(fetchData, 300000);
-    </script>
-</body>
-</html>
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 10px;
+            
+            const avgPM25 = (totalPM25 / count).toFixed(1);
+            const avgPM10 = (totalPM10 / count).toFixed(1);
+            const avgO3 = (totalO3 / count).toFixed(1);
+            const avgNO2 = (totalNO2 / count).toFixed(1);
+            const avgCO = (totalCO / count).toFixed(1);
+            
+            pieChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['PM2.5 (Fine Particles)', 'PM10 (Dust)', 'O₃ (Ozone)', 'NO₂ (Nitrogen Dioxide)', 'CO (Carbon Monoxide)'],
+                    datasets: [{
+                        data: [avgPM25, avgPM10, avgO3, avgNO2, avgCO],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB', 
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF'
+                        ],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 12,
+                                font: {
+                                    size: 11
+                                },
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    return data.labels.map((label, i) => ({
+                                        text: `${label}: ${data.datasets[0].data[i]} μg/m³`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        hidden: false,
+                                        index: i
+                                    }));
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + ' μg/m³';
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
