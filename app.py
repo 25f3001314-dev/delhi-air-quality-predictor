@@ -3,8 +3,8 @@ import gradio as gr
 import requests
 from datetime import datetime
 
-# AQI API configuration (you'll need to get API key from aqicn.org)
-AQI_API_KEY = "demo"  # Replace with your actual API key
+# AQI API configuration - get API key from aqicn.org and add to Hugging Face Secrets
+AQI_API_KEY = os.getenv("AQI_API_KEY", "demo")
 AQI_API_URL = "https://api.waqi.info/feed/delhi/"
 
 def get_aqi_category(aqi):
@@ -40,11 +40,12 @@ demo = gr.Interface(
     inputs=[],
     outputs=[
         gr.Number(label="AQI"),
-        gr.Text(label="Category"),
-        gr.Text(label="Last Updated"),
+        gr.Textbox(label="Category"),
+        gr.Textbox(label="Last Updated"),
     ],
     title="Delhi AQI Monitor",
     description="Live AQI data using WAQI API (demo fallback)",
 )
 
-demo.launch()
+if __name__ == "__main__":
+    demo.launch()
