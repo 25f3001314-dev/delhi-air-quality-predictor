@@ -84,7 +84,7 @@ def fetch_realtime_pollutants():
                 'nh3': iaqi.get("nh3", {}).get("v", 25),
                 'pm2_5_current': iaqi.get("pm25", {}).get("v", 200)
             }
-    except:
+    except Exception:
         pass
     
     # Default fallback values (typical Delhi pollution levels)
@@ -119,6 +119,10 @@ def predict_aqi_ml():
             'day': now.day,
             'hour': now.hour,
             'dayofweek': now.weekday(),
+            # Estimate lag features from current values
+            # - pm2_5_lag1: Use current PM2.5 as proxy for previous hour
+            # - pm2_5_lag24: Assume 10% reduction from typical daily variation
+            # - pm10_lag1: Assume 5% reduction from current PM10
             'pm2_5_lag1': pollutants['pm2_5_current'],
             'pm2_5_lag24': pollutants['pm2_5_current'] * 0.9,
             'pm10_lag1': pollutants['pm10'] * 0.95
@@ -217,7 +221,7 @@ class handler(BaseHTTPRequestHandler):
                                 "no2": iaqi.get("no2", {}).get("v", "N/A"),
                                 "co": iaqi.get("co", {}).get("v", "N/A"),
                             })
-                    except:
+                    except Exception:
                         continue
             
             # Get weather data for Delhi
@@ -225,7 +229,7 @@ class handler(BaseHTTPRequestHandler):
                 weather_url = "https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m&timezone=Asia/Kolkata"
                 weather_resp = requests.get(weather_url, timeout=3)
                 weather_data = weather_resp.json().get("current", {})
-            except:
+            except Exception:
                 weather_data = {}
             
             result = {

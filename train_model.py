@@ -22,6 +22,10 @@ df['hour'] = df['date'].dt.hour
 df['dayofweek'] = df['date'].dt.dayofweek
 
 # Create lag features for better predictions
+# Lag features capture temporal dependencies in air quality:
+# - pm2_5_lag1: Previous hour's PM2.5 (immediate history)
+# - pm2_5_lag24: PM2.5 from 24 hours ago (daily pattern)
+# - pm10_lag1: Previous hour's PM10 (correlated with PM2.5)
 df['pm2_5_lag1'] = df['pm2_5'].shift(1)
 df['pm2_5_lag24'] = df['pm2_5'].shift(24)
 df['pm10_lag1'] = df['pm10'].shift(1)
