@@ -207,10 +207,12 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Model files (until real model is added)
-*.pkl
-*.joblib
-*.h5
+# Model files - large files that can be regenerated from delhi_aqi.csv
+models/*.pkl
+
+# Data files  
+*.csv
+*.zip
 
 # Gradio
 gradio_cached_examples/
