@@ -24,7 +24,8 @@ class handler(BaseHTTPRequestHandler):
         try:
             # Get API key
             api_key = os.getenv("AQI_API_KEY", "demo")
-            api_url = "https://api.waqi.info/feed/delhi/"
+            # Use geo coordinates for Delhi to ensure correct city
+            api_url = "https://api.waqi.info/feed/geo:28.6139;77.2090/"
             
             # Fetch data
             response = requests.get(f"{api_url}?token={api_key}", timeout=5)
