@@ -291,6 +291,16 @@
             color: #666;
             line-height: 1.6;
         }
+        
+        @media (max-width: 768px) {
+            .map-container #delhiMap {
+                height: 350px;
+            }
+            
+            .map-legend {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -464,7 +474,7 @@
                     displayWeather(data.weather);
                     displayStations(data.stations);
                     updateChart(data.stations);
-                    updateMapMarkers(data.stations);  // NEW: Update map markers
+                    updateMapMarkers(data.stations);
                     
                     // Update prediction method badge
                     const mlBadge = document.querySelector('.ml-badge span');

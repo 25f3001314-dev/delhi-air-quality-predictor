@@ -388,8 +388,8 @@
                 padding: 15px;
             }
             
-            #delhiMap {
-                height: 350px !important;
+            .map-container #delhiMap {
+                height: 350px;
             }
             
             .map-legend {
@@ -574,7 +574,7 @@
                     displayWeather(data.weather);
                     displayStations(data.stations);
                     updateChart(data.stations);
-                    updateMapMarkers(data.stations);  // NEW: Update map markers
+                    updateMapMarkers(data.stations);
                     
                     // Update prediction method badge
                     const mlBadge = document.querySelector('.ml-badge span');
