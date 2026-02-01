@@ -221,9 +221,12 @@ class handler(BaseHTTPRequestHandler):
                         continue
             
             # Get weather data for Delhi
-            weather_url = "https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m&timezone=Asia/Kolkata"
-            weather_resp = requests.get(weather_url, timeout=3)
-            weather_data = weather_resp.json().get("current", {})
+            try:
+                weather_url = "https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m&timezone=Asia/Kolkata"
+                weather_resp = requests.get(weather_url, timeout=3)
+                weather_data = weather_resp.json().get("current", {})
+            except:
+                weather_data = {}
             
             result = {
                 "status": "success",
