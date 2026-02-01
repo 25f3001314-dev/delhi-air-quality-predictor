@@ -60,7 +60,7 @@ css = """
 }
 """
 
-with gr.Blocks(css=css, title="🌍 Delhi Live AQI Predictor") as demo:
+with gr.Blocks(title="🌍 Delhi Live AQI Predictor") as demo:
     gr.Markdown("""
     <div style="text-align: center; padding: 20px;">
     <h1 style="color: white; font-size: 2.5em; margin-bottom: 10px;">🌍 Delhi Live AQI Predictor</h1>
@@ -111,4 +111,4 @@ with gr.Blocks(css=css, title="🌍 Delhi Live AQI Predictor") as demo:
         outputs=output
     )
 
-demo.queue().launch(share=True)
+demo.queue().launch(share=True, css=css)
