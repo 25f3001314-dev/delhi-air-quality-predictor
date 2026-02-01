@@ -330,8 +330,6 @@
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
-            
-            <div class="timestamp" id="timestamp"></div>
         </div>
         
         <div id="error" class="error" style="display: none;"></div>
@@ -363,8 +361,6 @@
                     displayStations(data.stations);
                     updateBarChart(data.stations);
                     updatePieChart(data.stations);
-                    document.getElementById('timestamp').textContent = 
-                        `⏰ Last updated: ${data.timestamp}`;
                     
                     loading.style.display = 'none';
                     content.style.display = 'block';
