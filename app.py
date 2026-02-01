@@ -38,4 +38,4 @@ with gr.Blocks() as demo:
     gr.Button("Load Real Delhi Data").click(load_real, outputs=[solar,wind,temp,month,day])
     gr.Button("Predict").click(predict, [solar,wind,temp,month,day], out)
 
-demo.queue().launch()
+demo.queue().launch(share=True)
