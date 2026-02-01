@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: delhi-aqi-predictor
+    env: python
+    buildCommand: pip install -r requirements.txt && pip install flask
+    startCommand: python flask_app.py
+    envVars:
+      - key: AQI_API_KEY
+        value: 4e84e711ecd384cb72016b0238185ae0a443dbe3
