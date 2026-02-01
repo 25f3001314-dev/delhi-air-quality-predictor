@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delhi Air Quality Monitor - Comprehensive Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Leaflet Map Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
     <style>
         * {
             margin: 0;
@@ -282,6 +291,80 @@
             margin: 20px 0;
         }
         
+        /* MAP STYLES */
+        .map-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        #delhiMap {
+            z-index: 1;
+        }
+        
+        .map-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .leaflet-popup-content {
+            margin: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .popup-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .popup-aqi {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .popup-category {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .popup-details {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.6;
+        }
+        
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
@@ -303,6 +386,14 @@
             
             .chart-container {
                 padding: 15px;
+            }
+            
+            #delhiMap {
+                height: 350px !important;
+            }
+            
+            .map-legend {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -333,6 +424,38 @@
             <h2 style="color: white; margin: 20px 0 15px; text-align: center;">📍 Metro Station Monitoring</h2>
             <div class="stations-grid" id="stationsGrid"></div>
             
+            <!-- NEW MAP SECTION -->
+            <div class="map-container">
+                <h2 style="color: #333; margin-bottom: 20px; text-align: center;">🗺️ Delhi Air Quality Map</h2>
+                <div id="delhiMap" style="height: 500px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);"></div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #00e400;"></span>
+                        <span>Good (0-50)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #ffff00;"></span>
+                        <span>Moderate (51-100)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #ff7e00;"></span>
+                        <span>Unhealthy for Sensitive (101-150)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #ff0000;"></span>
+                        <span>Unhealthy (151-200)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #8f3f97;"></span>
+                        <span>Very Unhealthy (201-300)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #7e0023;"></span>
+                        <span>Hazardous (301+)</span>
+                    </div>
+                </div>
+            </div>
+            
             <div class="chart-container">
                 <h2 style="color: #333; margin-bottom: 20px;">📊 Station Comparison</h2>
                 <canvas id="aqiChart"></canvas>
@@ -346,6 +469,88 @@
     
     <script>
         let aqiChart = null;
+        let map = null;
+        let markers = [];
+        
+        // Delhi station coordinates
+        const stationLocations = {
+            "Anand Vihar": [28.6469, 77.3155],
+            "Punjabi Bagh": [28.6742, 77.1310],
+            "RK Puram": [28.5677, 77.1803],
+            "Dwarka": [28.5921, 77.0460],
+            "ITO": [28.6281, 77.2419]
+        };
+        
+        function initMap() {
+            // Initialize map centered on Delhi
+            map = L.map('delhiMap').setView([28.6139, 77.2090], 11);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(map);
+        }
+        
+        function updateMapMarkers(stations) {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            // Add new markers for each station
+            stations.forEach(station => {
+                const coords = stationLocations[station.name];
+                if (!coords) return;
+                
+                // Create custom icon with AQI color
+                const iconHtml = `
+                    <div style="
+                        background: ${station.color};
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        color: white;
+                        font-size: 14px;
+                    ">
+                        ${station.aqi}
+                    </div>
+                `;
+                
+                const icon = L.divIcon({
+                    html: iconHtml,
+                    className: 'custom-marker',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20],
+                    popupAnchor: [0, -20]
+                });
+                
+                // Create popup content
+                const popupContent = `
+                    <div class="popup-title">${station.name}</div>
+                    <div class="popup-aqi" style="color: ${station.color};">${station.aqi}</div>
+                    <div class="popup-category">${station.category}</div>
+                    <div class="popup-details">
+                        <strong>PM2.5:</strong> ${station.pm25} µg/m³<br>
+                        <strong>PM10:</strong> ${station.pm10} µg/m³<br>
+                        <strong>O₃:</strong> ${station.o3}<br>
+                        <strong>NO₂:</strong> ${station.no2}
+                    </div>
+                `;
+                
+                // Add marker to map
+                const marker = L.marker(coords, { icon: icon })
+                    .addTo(map)
+                    .bindPopup(popupContent);
+                
+                markers.push(marker);
+            });
+        }
         
         async function fetchData() {
             const loading = document.getElementById('loading');
@@ -369,6 +574,17 @@
                     displayWeather(data.weather);
                     displayStations(data.stations);
                     updateChart(data.stations);
+                    updateMapMarkers(data.stations);  // NEW: Update map markers
+                    
+                    // Update prediction method badge
+                    const mlBadge = document.querySelector('.ml-badge span');
+                    if (mlBadge && data.prediction_method === 'ml_model') {
+                        mlBadge.innerHTML = '🤖 ML-Powered Predictions (Active)';
+                    } else if (mlBadge) {
+                        mlBadge.innerHTML = '📡 API-Powered Data (Fallback)';
+                        mlBadge.style.background = 'linear-gradient(135deg, #ff7e00, #ff5500)';
+                    }
+                    
                     document.getElementById('timestamp').textContent = 
                         `Last updated: ${data.timestamp}`;
                     
@@ -476,7 +692,11 @@
             });
         }
         
-        window.addEventListener('load', fetchData);
+        window.addEventListener('load', () => {
+            initMap();  // Initialize map first
+            fetchData(); // Then fetch data
+        });
+        
         setInterval(fetchData, 300000); // Refresh every 5 minutes
     </script>
 </body>
