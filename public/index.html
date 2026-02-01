@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delhi Air Quality Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .aqi-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            color: white;
+        }
+        
+        .aqi-value {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .aqi-category {
+            font-size: 1.5em;
+            margin: 15px 0;
+            opacity: 0.9;
+        }
+        
+        .aqi-city {
+            font-size: 1.2em;
+            margin: 10px 0;
+            opacity: 0.8;
+        }
+        
+        .info-section {
+            text-align: left;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .info-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .timestamp {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #999;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Delhi Air Quality Monitor</h1>
+        <p class="subtitle">Real-time AQI Data</p>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading AQI data...</p>
+        </div>
+        
+        <div id="content" style="display: none;">
+            <div class="aqi-display">
+                <div class="aqi-city" id="city">Delhi</div>
+                <div class="aqi-value" id="aqi">--</div>
+                <div class="aqi-category" id="category">--</div>
+            </div>
+            
+            <div class="info-section">
+                <h3>Details</h3>
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="status">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Last Updated</span>
+                    <span class="info-value" id="timestamp">--</span>
+                </div>
+            </div>
+            
+            <button class="button" onclick="fetchAQI()">Refresh</button>
+            
+            <div class="timestamp">Data refreshed every minute</div>
+        </div>
+        
+        <div id="error" class="error"></div>
+        
+        <div class="footer">
+            <p>Powered by WAQI (World Air Quality Index)</p>
+            <p>Data is refreshed automatically. Last check: <span id="lastCheck">--</span></p>
+        </div>
+    </div>
+    
+    <script>
+        async function fetchAQI() {
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('content');
+            const error = document.getElementById('error');
+            
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            error.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/aqi');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    document.getElementById('aqi').textContent = data.aqi;
+                    document.getElementById('category').textContent = data.category;
+                    document.getElementById('city').textContent = data.city;
+                    document.getElementById('timestamp').textContent = data.timestamp;
+                    document.getElementById('status').textContent = 'Live';
+                    document.getElementById('lastCheck').textContent = new Date().toLocaleTimeString();
+                    
+                    loading.style.display = 'none';
+                    content.style.display = 'block';
+                } else {
+                    throw new Error(data.message || 'Failed to fetch AQI data');
+                }
+            } catch (err) {
+                error.style.display = 'block';
+                error.textContent = 'Error: ' + err.message;
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Fetch on load
+        window.addEventListener('load', fetchAQI);
+        
+        // Refresh every 60 seconds
+        setInterval(fetchAQI, 60000);
+    </script>
+</body>
+</html>
