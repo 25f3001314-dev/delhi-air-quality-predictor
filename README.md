@@ -1,3 +1,15 @@
+---
+title: Delhi Air Quality Predictor
+emoji: 🌍
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: "4.0"
+python_version: "3.10"
+app_file: app.py
+pinned: false
+---
+
 # Delhi Air Quality Predictor
 
 Air quality (AQI proxy) prediction using machine learning models.
@@ -74,3 +86,4 @@ Once a trained model is integrated, you can use it programmatically:
 # Example with future trained model
 from app import predict_air_quality
 result = predict_air_quality(solar_radiation=200, wind_speed=10, temperature=80, month=7, day=15)
+```
