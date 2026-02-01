@@ -1,0 +1,31 @@
+{
+  "model_type": "RandomForestRegressor",
+  "trained_date": "2026-02-01 19:26:14",
+  "features": [
+    "co",
+    "no",
+    "no2",
+    "o3",
+    "so2",
+    "pm10",
+    "nh3",
+    "year",
+    "month",
+    "day",
+    "hour",
+    "dayofweek",
+    "pm2_5_lag1",
+    "pm2_5_lag24",
+    "pm10_lag1"
+  ],
+  "train_samples": 15763,
+  "test_samples": 3941,
+  "metrics": {
+    "train_mae": 8.280138328422952,
+    "train_rmse": 10.782579602603633,
+    "train_r2": 0.9329524189164244,
+    "test_mae": 19.316416157249236,
+    "test_rmse": 24.10274836674916,
+    "test_r2": 0.6636313845321581
+  }
+}
