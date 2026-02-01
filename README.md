@@ -29,6 +29,9 @@ cd delhi-air-quality-predictor
 # Install dependencies
 pip install -r requirements.txt
 
+# Generate dataset (first time only)
+python extract_data_from_notebook.py
+
 # Train model (first time only)
 python train_model.py
 
@@ -45,20 +48,45 @@ export AQI_API_KEY=your_waqi_api_key
 
 Get your API key from: https://aqicn.org/api/
 
-## 📊 Model Training
+## 📊 Dataset Setup
 
-To retrain the model with new data:
+The model requires `delhi_aqi.csv` with Delhi air quality data.
+
+### Option 1: Generate Synthetic Data (Recommended)
+```bash
+python extract_data_from_notebook.py
+```
+
+This generates a synthetic dataset matching Delhi's pollution patterns based on the notebook's statistics (18,776 hourly records from Nov 2020 - Jan 2023).
+
+### Option 2: Use Your Own Data
+If you have the dataset from Google Colab or Kaggle:
+1. Place `delhi_aqi.csv` in the project root
+2. Ensure it has columns: `date, co, no, no2, o3, so2, pm2_5, pm10, nh3`
+
+### Option 3: Download from Kaggle
+1. Visit: [Air Quality Data in India](https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india)
+2. Download Delhi subset
+3. Place as `delhi_aqi.csv` in project root
+
+## 🧠 Model Training
+
+To train or retrain the model:
 
 ```bash
-# Place your delhi_aqi.csv in the root directory
+# Generate dataset if not already present
+python extract_data_from_notebook.py
+
+# Train the model
 python train_model.py
 ```
 
 This will:
-1. Train a new Random Forest model
-2. Save model to `models/aqi_model.pkl`
-3. Generate performance metrics
-4. Save model metadata
+1. Load the Delhi AQI dataset
+2. Train a new Random Forest model
+3. Save model to `models/aqi_model.pkl`
+4. Generate performance metrics
+5. Save model metadata
 
 ## 🌐 Deployment
 

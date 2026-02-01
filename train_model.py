@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 
 # Load and prepare data
+# NOTE: If delhi_aqi.csv is missing, run: python extract_data_from_notebook.py
 print("Loading Delhi AQI dataset...")
 df = pd.read_csv('delhi_aqi.csv')
 
