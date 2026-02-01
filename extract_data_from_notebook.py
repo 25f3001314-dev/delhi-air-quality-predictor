@@ -4,6 +4,29 @@ import numpy as np
 from datetime import datetime, timedelta
 import os
 
+# Target statistics from the original notebook's describe() output
+# These values ensure the synthetic data matches the real Delhi AQI patterns
+TARGET_MEANS = {
+    'co': 2929.23,
+    'no': 33.66,
+    'no2': 66.22,
+    'o3': 60.35,
+    'so2': 66.69,
+    'pm2_5': 238.13,
+    'pm10': 300.09,
+    'nh3': 25.11
+}
+
+# Min/Max values from the original notebook for clipping
+DATA_RANGES = {
+    'no2': (4.28, 460),
+    'o3': (0, 801),
+    'so2': (5.25, 579),
+    'pm2_5': (11.83, 1708),
+    'pm10': (15.07, 1969),
+    'nh3': (0, 287)
+}
+
 print("Checking if data exists in delhinew4.ipynb...")
 
 # Check if CSV already exists
@@ -55,15 +78,15 @@ np.random.seed(42)
 
 data = {
     'date': dates,
-    # Based on notebook statistics:
-    'co': np.random.lognormal(mean=7.5, sigma=0.8, size=len(dates)) * 280,
+    # Based on notebook statistics - generate distributions matching real Delhi AQI patterns:
+    'co': np.random.lognormal(mean=7.5, sigma=0.8, size=len(dates)) * 280,  # Scaled to match target mean ~2929
     'no': np.random.gamma(shape=1.5, scale=25, size=len(dates)),
-    'no2': np.random.normal(loc=66, scale=48, size=len(dates)).clip(4.28, 460),
-    'o3': np.random.gamma(shape=2, scale=30, size=len(dates)).clip(0, 801),
-    'so2': np.random.normal(loc=67, scale=49, size=len(dates)).clip(5.25, 579),
-    'pm2_5': np.random.lognormal(mean=5, sigma=0.8, size=len(dates)).clip(11.83, 1708),
-    'pm10': np.random.lognormal(mean=5.4, sigma=0.8, size=len(dates)).clip(15.07, 1969),
-    'nh3': np.random.gamma(shape=2, scale=12.5, size=len(dates)).clip(0, 287)
+    'no2': np.random.normal(loc=66, scale=48, size=len(dates)).clip(*DATA_RANGES['no2']),
+    'o3': np.random.gamma(shape=2, scale=30, size=len(dates)).clip(*DATA_RANGES['o3']),
+    'so2': np.random.normal(loc=67, scale=49, size=len(dates)).clip(*DATA_RANGES['so2']),
+    'pm2_5': np.random.lognormal(mean=5, sigma=0.8, size=len(dates)).clip(*DATA_RANGES['pm2_5']),
+    'pm10': np.random.lognormal(mean=5.4, sigma=0.8, size=len(dates)).clip(*DATA_RANGES['pm10']),
+    'nh3': np.random.gamma(shape=2, scale=12.5, size=len(dates)).clip(*DATA_RANGES['nh3'])
 }
 
 df = pd.DataFrame(data)
@@ -84,15 +107,9 @@ df.loc[rush_hour_mask, 'co'] *= 1.2
 # Drop temporary columns
 df = df.drop(['month', 'hour'], axis=1)
 
-# Ensure statistics match notebook (adjust to match means)
-df['co'] = (df['co'] - df['co'].mean()) + 2929.23
-df['no'] = (df['no'] - df['no'].mean()) + 33.66
-df['no2'] = (df['no2'] - df['no2'].mean()) + 66.22
-df['o3'] = (df['o3'] - df['o3'].mean()) + 60.35
-df['so2'] = (df['so2'] - df['so2'].mean()) + 66.69
-df['pm2_5'] = (df['pm2_5'] - df['pm2_5'].mean()) + 238.13
-df['pm10'] = (df['pm10'] - df['pm10'].mean()) + 300.09
-df['nh3'] = (df['nh3'] - df['nh3'].mean()) + 25.11
+# Adjust means to match the original notebook's statistics
+for col, target_mean in TARGET_MEANS.items():
+    df[col] = (df[col] - df[col].mean()) + target_mean
 
 # Ensure all values are positive
 for col in ['co', 'no', 'no2', 'o3', 'so2', 'pm2_5', 'pm10', 'nh3']:
