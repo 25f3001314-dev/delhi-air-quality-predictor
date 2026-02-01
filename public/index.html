@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delhi Air Quality Predictor</title>
+    <title>Delhi Air Quality Monitor - Comprehensive Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,138 +13,179 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
         
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
         h1 {
-            color: #333;
+            color: white;
+            text-align: center;
             margin-bottom: 10px;
             font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .subtitle {
-            color: #666;
+            color: rgba(255,255,255,0.9);
+            text-align: center;
             margin-bottom: 30px;
-            font-size: 1.1em;
+            font-size: 1.2em;
+        }
+        
+        .weather-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .weather-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .weather-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .weather-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .station-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .station-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .station-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
         }
         
         .aqi-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 40px;
-            margin: 30px 0;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
             color: white;
         }
         
         .aqi-value {
-            font-size: 4em;
+            font-size: 3.5em;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 10px 0;
         }
         
         .aqi-category {
-            font-size: 1.5em;
-            margin: 15px 0;
-            opacity: 0.9;
+            font-size: 1.3em;
+            margin: 5px 0;
         }
         
-        .aqi-city {
-            font-size: 1.2em;
-            margin: 10px 0;
-            opacity: 0.8;
-        }
-        
-        .info-section {
-            text-align: left;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 10px;
-        }
-        
-        .info-section h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .info-item:last-child {
-            border-bottom: none;
-        }
-        
-        .info-label {
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .info-value {
-            color: #333;
-            font-weight: bold;
-        }
-        
-        .timestamp {
-            color: #999;
-            font-size: 0.9em;
+        .pollutants {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             margin-top: 15px;
         }
         
+        .pollutant {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .pollutant-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .pollutant-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
         .button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #667eea;
             border: none;
             padding: 12px 30px;
             border-radius: 8px;
             font-size: 1em;
             cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 20px auto;
+            display: block;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
         .button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .button:active {
-            transform: translateY(0);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
         }
         
         .loading {
-            display: none;
             text-align: center;
-            padding: 20px;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
         }
         
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
@@ -151,68 +193,59 @@
             100% { transform: rotate(360deg); }
         }
         
+        .timestamp {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            opacity: 0.9;
+        }
+        
         .error {
             background: #ff6b6b;
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #999;
-            font-size: 0.9em;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🌍 Delhi Air Quality Monitor</h1>
-        <p class="subtitle">Real-time AQI Data</p>
+        <p class="subtitle">Comprehensive Environmental Dashboard</p>
         
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p>Loading AQI data...</p>
+            <p>Loading environmental data...</p>
         </div>
         
         <div id="content" style="display: none;">
-            <div class="aqi-display">
-                <div class="aqi-city" id="city">Delhi</div>
-                <div class="aqi-value" id="aqi">--</div>
-                <div class="aqi-category" id="category">--</div>
+            <div class="weather-card">
+                <h2 style="color: #333; margin-bottom: 15px;">🌤️ Weather Conditions</h2>
+                <div class="weather-grid" id="weatherGrid"></div>
             </div>
             
-            <div class="info-section">
-                <h3>Details</h3>
-                <div class="info-item">
-                    <span class="info-label">Status</span>
-                    <span class="info-value" id="status">--</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Last Updated</span>
-                    <span class="info-value" id="timestamp">--</span>
-                </div>
+            <h2 style="color: white; margin: 20px 0 15px; text-align: center;">📍 Metro Station Monitoring</h2>
+            <div class="stations-grid" id="stationsGrid"></div>
+            
+            <div class="chart-container">
+                <h2 style="color: #333; margin-bottom: 20px;">📊 Station Comparison</h2>
+                <canvas id="aqiChart"></canvas>
             </div>
             
-            <button class="button" onclick="fetchAQI()">Refresh</button>
+            <button class="button" onclick="fetchData()">🔄 Refresh Data</button>
             
-            <div class="timestamp">Data refreshed every minute</div>
+            <div class="timestamp" id="timestamp"></div>
         </div>
         
-        <div id="error" class="error"></div>
-        
-        <div class="footer">
-            <p>Powered by WAQI (World Air Quality Index)</p>
-            <p>Data is refreshed automatically. Last check: <span id="lastCheck">--</span></p>
-        </div>
+        <div id="error" class="error" style="display: none;"></div>
     </div>
     
     <script>
-        async function fetchAQI() {
+        let aqiChart = null;
+        
+        async function fetchData() {
             const loading = document.getElementById('loading');
             const content = document.getElementById('content');
             const error = document.getElementById('error');
@@ -225,23 +258,22 @@
                 const response = await fetch('/api/aqi');
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    document.getElementById('aqi').textContent = data.aqi;
-                    document.getElementById('category').textContent = data.category;
-                    document.getElementById('city').textContent = data.city;
-                    document.getElementById('timestamp').textContent = data.timestamp;
-                    document.getElementById('status').textContent = 'Live';
-                    document.getElementById('lastCheck').textContent = new Date().toLocaleTimeString();
+                    displayWeather(data.weather);
+                    displayStations(data.stations);
+                    updateChart(data.stations);
+                    document.getElementById('timestamp').textContent = 
+                        `Last updated: ${data.timestamp}`;
                     
                     loading.style.display = 'none';
                     content.style.display = 'block';
                 } else {
-                    throw new Error(data.message || 'Failed to fetch AQI data');
+                    throw new Error(data.message || 'Failed to fetch data');
                 }
             } catch (err) {
                 error.style.display = 'block';
@@ -250,11 +282,100 @@
             }
         }
         
-        // Fetch on load
-        window.addEventListener('load', fetchAQI);
+        function displayWeather(weather) {
+            const grid = document.getElementById('weatherGrid');
+            grid.innerHTML = `
+                <div class="weather-item">
+                    <div class="weather-label">Temperature</div>
+                    <div class="weather-value">${weather.temperature}°C</div>
+                </div>
+                <div class="weather-item">
+                    <div class="weather-label">Humidity</div>
+                    <div class="weather-value">${weather.humidity}%</div>
+                </div>
+                <div class="weather-item">
+                    <div class="weather-label">Wind Speed</div>
+                    <div class="weather-value">${weather.wind_speed} km/h</div>
+                </div>
+                <div class="weather-item">
+                    <div class="weather-label">Wind Direction</div>
+                    <div class="weather-value">${weather.wind_direction}°</div>
+                </div>
+            `;
+        }
         
-        // Refresh every 60 seconds
-        setInterval(fetchAQI, 60000);
+        function displayStations(stations) {
+            const grid = document.getElementById('stationsGrid');
+            grid.innerHTML = stations.map(station => `
+                <div class="station-card">
+                    <div class="station-name">${station.name}</div>
+                    <div class="aqi-display" style="background: ${station.color};">
+                        <div class="aqi-value">${station.aqi}</div>
+                        <div class="aqi-category">${station.category}</div>
+                    </div>
+                    <div class="pollutants">
+                        <div class="pollutant">
+                            <div class="pollutant-label">PM2.5</div>
+                            <div class="pollutant-value">${station.pm25}</div>
+                        </div>
+                        <div class="pollutant">
+                            <div class="pollutant-label">PM10</div>
+                            <div class="pollutant-value">${station.pm10}</div>
+                        </div>
+                        <div class="pollutant">
+                            <div class="pollutant-label">O₃</div>
+                            <div class="pollutant-value">${station.o3}</div>
+                        </div>
+                        <div class="pollutant">
+                            <div class="pollutant-label">NO₂</div>
+                            <div class="pollutant-value">${station.no2}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateChart(stations) {
+            const ctx = document.getElementById('aqiChart').getContext('2d');
+            
+            if (aqiChart) {
+                aqiChart.destroy();
+            }
+            
+            aqiChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: stations.map(s => s.name),
+                    datasets: [{
+                        label: 'AQI Value',
+                        data: stations.map(s => s.aqi),
+                        backgroundColor: stations.map(s => s.color),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'AQI Value'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        window.addEventListener('load', fetchData);
+        setInterval(fetchData, 300000); // Refresh every 5 minutes
     </script>
 </body>
 </html>
