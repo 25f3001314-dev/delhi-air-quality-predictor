@@ -75,10 +75,11 @@
         
         .stations-grid {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 20px;
             overflow-x: auto;
             padding-bottom: 10px;
+            justify-content: center;
         }
         
         .stations-grid::-webkit-scrollbar {
@@ -98,11 +99,12 @@
         .station-card {
             background: white;
             border-radius: 12px;
-            padding: 15px;
+            padding: 18px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: transform 0.3s;
-            min-width: 200px;
-            flex-shrink: 0;
+            flex: 1;
+            min-width: 220px;
+            max-width: 250px;
         }
         
         .station-card:hover {
@@ -110,29 +112,33 @@
         }
         
         .station-name {
-            font-size: 1em;
+            font-size: 1.1em;
             font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 10px;
+            color: #222;
+            letter-spacing: 0.3px;
         }
         
         .aqi-display {
-            padding: 15px;
-            border-radius: 8px;
+            padding: 18px;
+            border-radius: 10px;
             text-align: center;
-            margin: 8px 0;
+            margin: 10px 0;
             color: white;
         }
         
         .aqi-value {
-            font-size: 2.2em;
+            font-size: 2.5em;
             font-weight: bold;
-            margin: 3px 0;
+            margin: 5px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .aqi-category {
-            font-size: 0.9em;
-            margin: 2px 0;
+            font-size: 1em;
+            margin: 3px 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
         
         .pollutants {
@@ -150,15 +156,16 @@
         }
         
         .pollutant-label {
-            font-size: 0.7em;
+            font-size: 0.75em;
             color: #666;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
+            font-weight: 600;
         }
         
         .pollutant-value {
-            font-size: 1em;
+            font-size: 1.1em;
             font-weight: bold;
-            color: #333;
+            color: #222;
         }
         
         .refresh-container {
@@ -280,8 +287,13 @@
                 font-size: 1.8em;
             }
             
+            .stations-grid {
+                justify-content: flex-start;
+            }
+            
             .station-card {
-                min-width: 180px;
+                min-width: 200px;
+                max-width: none;
             }
             
             .refresh-button {
