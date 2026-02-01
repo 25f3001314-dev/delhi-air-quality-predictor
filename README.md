@@ -73,8 +73,6 @@ This app can be deployed on:
 ### Auto-Deploy
 This repository automatically syncs to Hugging Face Spaces on every push to main branch using GitHub Actions.
 
-See [.github/SYNC_SETUP.md](.github/SYNC_SETUP.md) for setup details.
-
 ## Usage
 
 ### Web Interface (Recommended)
