@@ -1,78 +1,41 @@
-"""
-Delhi Air Quality Predictor - Gradio Web Interface
-
-This application provides a user-friendly interface for predicting ozone levels
-(an indicator of air quality) based on weather parameters.
-"""
-
 import gradio as gr
-import numpy as np
-from sklearn.ensemble import RandomForestRegressor
+import requests
+from datetime import datetime
 
-# Train a simple model
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-X_train = np.random.rand(100, 5) * 100
-y_train = X_train[:, 2] * 0.8 + X_train[:, 1] * 0.1 + np.random.rand(100) * 10
-model.fit(X_train, y_train)
+def get_weather():
+    try:
+        url = "https://api.open-meteo.com/v1/forecast?latitude=28.61&longitude=77.23&current=temperature_2m,wind_speed_10m&timezone=Asia%2FKolkata"
+        data = requests.get(url, timeout=10).json()
+        return data['current']['temperature_2m'], data['current']['wind_speed_10m']
+    except:
+        return 20, 5  # Fallback
 
-def predict_air_quality(solar_radiation, wind_speed, temperature, month, day):
-    """
-    Predict ozone levels based on weather parameters.
-    
-    Args:
-        solar_radiation: Solar radiation in langley (0-400)
-        wind_speed: Wind speed in mph (0-25)
-        temperature: Temperature in Fahrenheit (50-100)
-        month: Month of the year (1-12)
-        day: Day of the month (1-31)
-        
-    Returns:
-        tuple: (ozone_level, category, health_advisory)
-    """
-    
-    features = np.array([[solar_radiation, wind_speed, temperature, month, day]])
-    prediction = model.predict(features)[0]
-    prediction = max(0, prediction)
-    
-    if prediction < 50:
-        category = "🟢 Good"
-        advisory = "Air quality is satisfactory. Enjoy outdoor activities!"
-    elif prediction < 100:
-        category = "🟡 Moderate"
-        advisory = "Air quality is acceptable. Sensitive groups should limit outdoor activity."
-    elif prediction < 150:
-        category = "🟠 Unhealthy for Sensitive Groups"
-        advisory = "Sensitive groups should avoid prolonged outdoor activities."
-    else:
-        category = "🔴 Unhealthy"
-        advisory = "Everyone should limit outdoor activities. Wear masks if necessary."
-    
-    return f"Predicted Ozone: {prediction:.2f} ppb\n\n{category}\n\n{advisory}"
+def get_aqi():
+    try:
+        token = "d4e8711cd3c48f702b02815a4e4db3"
+        url = f"https://api.waqi.info/feed/@3715/?token={token}"
+        data = requests.get(url, timeout=10).json()
+        return data['data'].get('o3', 27)
+    except:
+        return 27
 
+def load_real():
+    temp, wind = get_weather()
+    return 300, wind*0.28, temp, 2, 1  # Solar approx
 
-# Create Gradio interface
-with gr.Blocks(title="Delhi Air Quality Predictor") as demo:
-    gr.Markdown("# 🌍 Delhi Air Quality Predictor")
-    gr.Markdown("Predict air quality using weather features")
-    
-    with gr.Row():
-        solar_radiation = gr.Slider(0, 350, value=200, label="Solar Radiation (langleys)")
-        wind_speed = gr.Slider(0, 20, value=10, label="Wind Speed (mph)")
-    
-    with gr.Row():
-        temperature = gr.Slider(50, 100, value=75, label="Temperature (°F)")
-        month = gr.Slider(1, 12, value=7, step=1, label="Month")
-    
-    day = gr.Slider(1, 31, value=15, step=1, label="Day of Month")
-    
-    predict_btn = gr.Button("🔮 Predict Air Quality", variant="primary")
-    output = gr.Textbox(label="Air Quality Prediction", lines=5)
-    
-    predict_btn.click(
-        fn=predict_air_quality,
-        inputs=[solar_radiation, wind_speed, temperature, month, day],
-        outputs=output
-    )
+def predict(solar, wind, temp, month, day):
+    ozone = 0.1*solar - 0.5*wind + 0.8*temp/10 + get_aqi()
+    cat = "Good" if ozone<30 else "Unhealthy"
+    return f"Live Delhi O3: {get_aqi():.0f} ppb\nPred: {ozone:.0f} ppb\n{cat}"
 
-if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+with gr.Blocks() as demo:
+    gr.Markdown("# Delhi Live AQI Predictor")
+    solar = gr.Slider(0,1000, label="Solar (W/m²)")
+    wind = gr.Slider(0,20, label="Wind (km/h)")
+    temp = gr.Slider(0,50, label="Temp (°C)")
+    month, day = gr.Slider(1,12), gr.Slider(1,31)
+    out = gr.Textbox()
+    gr.Button("Load Real Delhi Data").click(load_real, outputs=[solar,wind,temp,month,day])
+    gr.Button("Predict").click(predict, [solar,wind,temp,month,day], out)
+
+demo.queue().launch()
