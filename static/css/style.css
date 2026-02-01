@@ -1,0 +1,428 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #fdfcfb 0%, #f5f0e8 50%, #fff9f0 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 30px;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.live-badge {
+    background: #ff4444;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 18px;
+    opacity: 0.95;
+    margin-bottom: 8px;
+    font-weight: 300;
+}
+
+.last-updated {
+    font-size: 14px;
+    opacity: 0.85;
+    font-style: italic;
+    font-weight: 300;
+}
+
+.aqi-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fef9f3 100%);
+    border-radius: 24px;
+    padding: 50px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.8);
+}
+
+.aqi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.aqi-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 40px;
+    margin-bottom: 40px;
+    align-items: center;
+}
+
+.live-indicator {
+    color: #ff4444;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.aqi-number {
+    font-size: 120px;
+    font-weight: 800;
+    color: #ff6b35;
+    line-height: 1;
+    text-shadow: 2px 2px 8px rgba(255, 107, 53, 0.2);
+}
+
+.aqi-unit {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-label {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.category-value {
+    font-size: 48px;
+    font-weight: 800;
+    color: #ff6b35;
+    text-shadow: 2px 2px 8px rgba(255, 107, 53, 0.2);
+    line-height: 1.2;
+}
+
+.weather-section {
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.weather-icon {
+    font-size: 60px;
+    margin-bottom: 10px;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+}
+
+.temperature {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.weather-condition {
+    color: #718096;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.refresh-btn {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: white;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.refresh-btn:hover {
+    transform: rotate(180deg) scale(1.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.pollutant-info {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 40px;
+    font-size: 18px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.pollutant-item {
+    flex: 1;
+}
+
+.pollutant-label {
+    font-weight: 700;
+    color: #2d3748;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pollutant-value {
+    color: #ff6b35;
+    font-weight: 800;
+    font-size: 22px;
+}
+
+.aqi-scale {
+    margin-bottom: 40px;
+    padding: 25px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #4a5568;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.scale-bar {
+    display: flex;
+    height: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.scale-segment {
+    flex: 1;
+}
+
+.scale-segment.good { background: #00e400; }
+.scale-segment.moderate { background: #ffff00; }
+.scale-segment.poor { background: #ff7e00; }
+.scale-segment.unhealthy { background: #ff0000; }
+.scale-segment.severe { background: #8f3f97; }
+.scale-segment.hazardous { background: #7e0023; }
+
+.scale-values {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #718096;
+    font-weight: 600;
+}
+
+.weather-details {
+    display: flex;
+    gap: 40px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.detail-icon {
+    font-size: 28px;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #718096;
+    margin-right: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 18px;
+}
+
+.mascot {
+    position: absolute;
+    right: 40px;
+    bottom: 20px;
+    opacity: 0.8;
+}
+
+.mascot img {
+    width: 120px;
+    height: auto;
+    filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.15));
+}
+
+.chart-section {
+    background: linear-gradient(135deg, #ffffff 0%, #fef9f3 100%);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.8);
+}
+
+.chart-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.location-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.location-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.min-max {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-box {
+    padding: 20px 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.stat-box.min {
+    background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+}
+
+.stat-box.max {
+    background: linear-gradient(135deg, #e53935 0%, #d32f2f 100%);
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: white;
+    line-height: 1.5;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#aqiChart {
+    height: 300px !important;
+}
+
+@media (max-width: 768px) {
+    .aqi-main {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .aqi-number {
+        font-size: 80px;
+    }
+    
+    .category-value {
+        font-size: 32px;
+    }
+    
+    .pollutant-info,
+    .weather-details {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    h1 {
+        font-size: 28px;
+    }
+    
+    .subtitle {
+        font-size: 16px;
+    }
+}

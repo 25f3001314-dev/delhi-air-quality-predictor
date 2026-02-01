@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Delhi Air Quality Index (AQI) | Air Pollution</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="live-badge">● LIVE</span>
+            <h1>New Delhi Air Quality Index (AQI) | Air Pollution</h1>
+            <p class="subtitle">Real-time PM2.5, PM10 air pollution level in New Delhi</p>
+            <p class="last-updated">Last Updated: <span id="lastUpdated">Loading...</span> (Local Time)</p>
+        </header>
+
+        <main>
+            <div class="aqi-card">
+                <div class="aqi-main">
+                    <div class="aqi-value-section">
+                        <div class="live-indicator">● Live AQI</div>
+                        <div class="aqi-number" id="aqiNumber">--</div>
+                        <div class="aqi-unit">AQI (US)</div>
+                    </div>
+
+                    <div class="aqi-category-section">
+                        <div class="category-label">Air Quality is</div>
+                        <div class="category-value" id="categoryValue">Loading...</div>
+                    </div>
+
+                    <div class="weather-section">
+                        <div class="weather-icon">☁️</div>
+                        <div class="temperature">
+                            <span id="temperature">--</span>°C
+                        </div>
+                        <div class="weather-condition" id="weatherCondition">Mist</div>
+                    </div>
+
+                    <div class="refresh-btn">⟳</div>
+                </div>
+
+                <div class="pollutant-info">
+                    <div class="pollutant-item">
+                        <span class="pollutant-label">PM2.5 :</span>
+                        <span class="pollutant-value" id="pm25Value">--</span> μg/m³
+                    </div>
+                    <div class="pollutant-item">
+                        <span class="pollutant-label">PM10 :</span>
+                        <span class="pollutant-value" id="pm10Value">--</span> μg/m³
+                    </div>
+                </div>
+
+                <div class="aqi-scale">
+                    <div class="scale-labels">
+                        <span>Good</span>
+                        <span>Moderate</span>
+                        <span>Poor</span>
+                        <span>Unhealthy</span>
+                        <span>Severe</span>
+                        <span>Hazardous</span>
+                    </div>
+                    <div class="scale-bar">
+                        <div class="scale-segment good"></div>
+                        <div class="scale-segment moderate"></div>
+                        <div class="scale-segment poor"></div>
+                        <div class="scale-segment unhealthy"></div>
+                        <div class="scale-segment severe"></div>
+                        <div class="scale-segment hazardous"></div>
+                    </div>
+                    <div class="scale-values">
+                        <span>0</span>
+                        <span>50</span>
+                        <span>100</span>
+                        <span>150</span>
+                        <span>200</span>
+                        <span>300</span>
+                        <span>301+</span>
+                    </div>
+                </div>
+
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <div class="detail-icon">💧</div>
+                        <div class="detail-label">Humidity</div>
+                        <div class="detail-value" id="humidity">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">💨</div>
+                        <div class="detail-label">Wind Speed</div>
+                        <div class="detail-value" id="windSpeed">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">☀️</div>
+                        <div class="detail-label">UV Index</div>
+                        <div class="detail-value">0</div>
+                    </div>
+                </div>
+
+                <div class="mascot">
+                    <img src="{{ url_for('static', filename='images/mascot.png') }}" alt="Mascot" onerror="this.style.display='none'">
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <button class="location-btn">📍 New Delhi</button>
+                    <div class="min-max">
+                        <div class="stat-box min">
+                            <div class="stat-value" id="minAqi">--</div>
+                            <div class="stat-label">Min.<br>at <span id="minTime">--</span></div>
+                        </div>
+                        <div class="stat-box max">
+                            <div class="stat-value" id="maxAqi">--</div>
+                            <div class="stat-label">Max.<br>at <span id="maxTime">--</span></div>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="aqiChart"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

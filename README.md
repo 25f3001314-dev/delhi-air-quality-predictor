@@ -12,7 +12,7 @@ pinned: false
 
 # Delhi Air Quality Predictor
 
-A real-time air quality prediction application for Delhi using weather data and machine learning.
+This is a Gradio Space. Ensure `app.py` defines `demo` and calls `demo.launch()`.
 
 ## Features
 
@@ -43,6 +43,10 @@ http://localhost:7860
 This application uses:
 - **Weather Data**: Open-Meteo API (https://open-meteo.com/)
 - **AQI Data**: AQICN API (https://aqicn.org/api/)
+
+## Deploy
+
+Push this repo to a Hugging Face Space (SDK: Gradio). The Space will install `requirements.txt` automatically and stay running.
 
 ## Reference
 
