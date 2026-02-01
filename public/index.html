@@ -349,13 +349,18 @@
             error.style.display = 'none';
             
             try {
+                console.log('Fetching data from /api/aqi...');
                 const response = await fetch('/api/aqi');
+                console.log('Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
                 
-                const data = await response.json();
+                const text = await response.text();
+                console.log('Response text:', text);
+                const data = JSON.parse(text);
+                console.log('Parsed data:', data);
                 
                 if (data.status === 'success') {
                     displayStations(data.stations);
@@ -368,8 +373,12 @@
                     throw new Error(data.message || 'Failed to fetch data');
                 }
             } catch (err) {
+                console.error('Fetch error:', err);
                 error.style.display = 'block';
-                error.textContent = '❌ Error: ' + err.message;
+                error.innerHTML = `
+                    <strong>❌ Error:</strong> ${err.message}<br>
+                    <small>Check browser console (F12) for details</small>
+                `;
                 loading.style.display = 'none';
             }
         }
