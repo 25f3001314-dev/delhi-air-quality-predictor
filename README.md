@@ -1,40 +1,49 @@
 ---
-title: Bachao
-emoji: 🚀
+title: Delhi Air Quality Predictor
+emoji: 🌍
 colorFrom: blue
 colorTo: green
 sdk: gradio
-sdk_version: "4.44.0"
-python_version: "3.10"
+sdk_version: "4.0"
+python_version: "3.12"
 app_file: app.py
 pinned: false
 ---
 
-# Bachao - Delhi Air Quality Predictor
+# Delhi Air Quality Predictor
 
-Predict air quality using machine learning models.
-
-## Overview
-This project predicts ozone concentration as an indicator of air quality using weather-based features.
-
-## Models
-- Random Forest Regressor (baseline)
-- XGBoost Regressor (tuned)
+A real-time air quality prediction application for Delhi using weather data and machine learning.
 
 ## Features
-- Solar Radiation (langleys)
-- Wind Speed (mph)
-- Temperature (°F)
-- Month
-- Day
+
+- Real-time weather data from Open-Meteo API
+- Live AQI data from AQICN
+- Air quality predictions based on weather parameters
+- Interactive Gradio interface
 
 ## Running Locally
+
+1. Install dependencies:
 ```bash
 pip install -r requirements.txt
+```
+
+2. Run the application:
+```bash
 python app.py
 ```
 
-Visit `http://localhost:7860`
+3. Open in browser:
+```
+http://localhost:7860
+```
 
-## Live Demo
-🌐 https://huggingface.co/spaces/25f3001314/Bachao
+## Configuration
+
+This application uses:
+- **Weather Data**: Open-Meteo API (https://open-meteo.com/)
+- **AQI Data**: AQICN API (https://aqicn.org/api/)
+
+## Reference
+
+Check out the Hugging Face Spaces configuration reference: https://huggingface.co/docs/hub/spaces-config-reference
