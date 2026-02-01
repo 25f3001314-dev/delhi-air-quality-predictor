@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/aqi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/aqi.py"
+    }
+  ],
+  "env": {
+    "AQI_API_KEY": "4e84e711ecd384cb72016b0238185ae0a443dbe3"
+  }
+}
