@@ -156,7 +156,9 @@ function renderChart(data) {
                 data: aqiValues,
                 backgroundColor: barColors,
                 borderWidth: 0,
-                barThickness: 8
+                barThickness: 44,
+                barPercentage: 0.85,
+                categoryPercentage: 0.8
             }]
         },
         options: {

@@ -143,7 +143,7 @@ def generate_historical_data():
     current_data = fetch_aqi_data()
     base_aqi = current_data.get('aqi', 131) if current_data.get('status') == 'success' else 131
     now = datetime.now()
-    for i in range(24, 0, -1):
+    for i in range(24, 0, -3):
         t = now - timedelta(hours=i)
         variation = random.randint(-20, 20)
         aqi = max(20, base_aqi + variation)
