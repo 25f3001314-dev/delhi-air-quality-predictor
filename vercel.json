@@ -8,15 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/api",
-      "dest": "api/index.py"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "api/index.py"
     }
-  ],
-  "env": {
-    "AQI_API_KEY": "4e84e711ecd384cb72016b0238185ae0a443dbe3"
-  }
+  ]
 }
