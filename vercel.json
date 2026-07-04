@@ -16,6 +16,14 @@
       "dest": "/static/$1"
     },
     {
+      "src": "/api/current",
+      "dest": "api/index.py"
+    },
+    {
+      "src": "/api/aqi",
+      "dest": "api/index.py"
+    },
+    {
       "src": "/(.*)",
       "dest": "api/index.py"
     }

@@ -162,6 +162,17 @@ h1 {
     font-weight: 500;
 }
 
+.error-message {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(229, 62, 62, 0.1);
+    color: #c53030;
+    border: 1px solid rgba(229, 62, 62, 0.25);
+    font-weight: 600;
+    line-height: 1.5;
+}
+
 .refresh-btn {
     width: 56px;
     height: 56px;
@@ -293,23 +304,11 @@ h1 {
     font-size: 18px;
 }
 
-.mascot {
-    position: absolute;
-    right: 40px;
-    bottom: 20px;
-    opacity: 0.8;
-}
-
-.mascot img {
-    width: 120px;
-    height: auto;
-    filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.15));
-}
-
 .chart-section {
     background: linear-gradient(135deg, #ffffff 0%, #fef9f3 100%);
     border-radius: 24px;
     padding: 40px;
+    position: relative;
     box-shadow: 0 15px 50px rgba(0,0,0,0.08);
     border: 1px solid rgba(255,255,255,0.8);
 }
@@ -398,6 +397,45 @@ h1 {
     height: 300px !important;
 }
 
+@media (max-width: 1024px) {
+    body {
+        padding: 16px;
+    }
+
+    .aqi-card,
+    .chart-section {
+        padding: 32px;
+    }
+
+    .aqi-main {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .refresh-btn {
+        justify-self: start;
+    }
+
+    .pollutant-info,
+    .weather-details {
+        gap: 20px;
+    }
+
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .min-max {
+        width: 100%;
+    }
+
+    .stat-box {
+        flex: 1;
+    }
+}
+
 @media (max-width: 768px) {
     .aqi-main {
         grid-template-columns: 1fr;
@@ -424,5 +462,18 @@ h1 {
     
     .subtitle {
         font-size: 16px;
+    }
+
+    .chart-header,
+    .min-max {
+        width: 100%;
+    }
+
+    .min-max {
+        flex-direction: column;
+    }
+
+    .stat-box {
+        width: 100%;
     }
 }

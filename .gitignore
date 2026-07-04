@@ -217,3 +217,5 @@ models/*.pkl
 # Gradio
 gradio_cached_examples/
 flagged/
+.vercel
+.env*

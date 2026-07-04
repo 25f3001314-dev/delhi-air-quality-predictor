@@ -1,18 +1,66 @@
 let aqiChart;
 
+function formatOneDecimal(value) {
+    const numericValue = Number(value);
+
+    if (!Number.isFinite(numericValue)) {
+        return 'N/A';
+    }
+
+    return numericValue.toFixed(1);
+}
+
+function setErrorState(message) {
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (errorMessage) {
+        errorMessage.textContent = message;
+        errorMessage.hidden = false;
+    }
+}
+
+function clearErrorState() {
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (errorMessage) {
+        errorMessage.textContent = '';
+        errorMessage.hidden = true;
+    }
+}
+
 async function fetchCurrentAQI() {
     try {
         const response = await fetch('/api/current');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
         const data = await response.json();
+
+        if (!data || data.status === 'error') {
+            throw new Error(data?.message || 'AQI data is unavailable');
+        }
+
+        if (!Number.isFinite(Number(data.aqi)) || !data.category || !data.color) {
+            throw new Error('AQI payload is invalid');
+        }
+
+        clearErrorState();
         
         document.getElementById('aqiNumber').textContent = data.aqi;
         document.getElementById('categoryValue').textContent = data.category;
         document.getElementById('pm25Value').textContent = data.pm25;
         document.getElementById('pm10Value').textContent = data.pm10;
-        document.getElementById('temperature').textContent = Math.round(data.temperature * 10) / 10;
-        document.getElementById('humidity').textContent = Math.round(data.humidity) + ' %';
-        document.getElementById('windSpeed').textContent = (Math.round(data.wind_speed * 10) / 10) + ' km/h';
+        document.getElementById('temperature').textContent = formatOneDecimal(data.temperature);
+        document.getElementById('humidity').textContent = `${formatOneDecimal(data.humidity)} %`;
+        document.getElementById('windSpeed').textContent = `${formatOneDecimal(data.wind_speed)} km/h`;
         document.getElementById('lastUpdated').textContent = data.timestamp;
+
+        const weatherCondition = document.getElementById('weatherCondition');
+
+        if (weatherCondition) {
+            weatherCondition.textContent = data.weather_condition || data.category || 'Current conditions';
+        }
         
         // Update colors based on AQI
         document.getElementById('aqiNumber').style.color = data.color;
@@ -20,13 +68,22 @@ async function fetchCurrentAQI() {
         
     } catch (error) {
         console.error('Error fetching current AQI:', error);
+        setErrorState(`Unable to load current AQI data: ${error.message}`);
     }
 }
 
 async function fetchHistoricalData() {
     try {
         const response = await fetch('/api/historical');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
         const data = await response.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            throw new Error('Historical AQI data is unavailable');
+        }
         
         // Find min and max
         const values = data.map(d => d.aqi);
@@ -43,6 +100,7 @@ async function fetchHistoricalData() {
         renderChart(data);
     } catch (error) {
         console.error('Error fetching historical data:', error);
+        setErrorState(`Unable to load historical AQI data: ${error.message}`);
     }
 }
 
@@ -126,8 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchHistoricalData, 300000);
     
     // Manual refresh button
-    document.querySelector('.refresh-btn').addEventListener('click', () => {
-        fetchCurrentAQI();
-        fetchHistoricalData();
-    });
+    const refreshButton = document.querySelector('.refresh-btn');
+
+    if (refreshButton) {
+        refreshButton.addEventListener('click', () => {
+            fetchCurrentAQI();
+            fetchHistoricalData();
+        });
+    }
 });
