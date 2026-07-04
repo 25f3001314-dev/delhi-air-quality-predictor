@@ -62,13 +62,19 @@
                         <span>Severe</span>
                         <span>Hazardous</span>
                     </div>
-                    <div class="scale-bar">
-                        <div class="scale-segment good"></div>
-                        <div class="scale-segment moderate"></div>
-                        <div class="scale-segment poor"></div>
-                        <div class="scale-segment unhealthy"></div>
-                        <div class="scale-segment severe"></div>
-                        <div class="scale-segment hazardous"></div>
+                    <div class="scale-bar-wrapper" style="position: relative;">
+                        <div class="scale-bar">
+                            <div class="scale-segment good"></div>
+                            <div class="scale-segment moderate"></div>
+                            <div class="scale-segment poor"></div>
+                            <div class="scale-segment unhealthy"></div>
+                            <div class="scale-segment severe"></div>
+                            <div class="scale-segment hazardous"></div>
+                        </div>
+                        <div class="scale-pointer" id="scalePointer">
+                            <div class="pointer-triangle"></div>
+                            <div class="pointer-value" id="pointerValue">--</div>
+                        </div>
                     </div>
                     <div class="scale-values">
                         <span>0</span>

@@ -28,6 +28,28 @@ function clearErrorState() {
     }
 }
 
+function updateScalePointer(aqiValue) {
+    const scalePointer = document.getElementById('scalePointer');
+    const pointerValue = document.getElementById('pointerValue');
+    const numericAqi = Number(aqiValue);
+
+    if (!scalePointer || !pointerValue) {
+        return;
+    }
+
+    if (!Number.isFinite(numericAqi)) {
+        pointerValue.textContent = '--';
+        scalePointer.style.left = '0%';
+        return;
+    }
+
+    const cappedAqi = Math.min(Math.max(numericAqi, 0), 301);
+    const percentage = (cappedAqi / 301) * 100;
+
+    pointerValue.textContent = String(Math.round(numericAqi));
+    scalePointer.style.left = `${percentage}%`;
+}
+
 async function fetchCurrentAQI() {
     try {
         const response = await fetch('/api/current');
@@ -48,6 +70,7 @@ async function fetchCurrentAQI() {
         clearErrorState();
         
         document.getElementById('aqiNumber').textContent = data.aqi;
+        updateScalePointer(data.aqi);
         document.getElementById('categoryValue').textContent = data.category;
         document.getElementById('pm25Value').textContent = data.pm25;
         document.getElementById('pm10Value').textContent = data.pm10;

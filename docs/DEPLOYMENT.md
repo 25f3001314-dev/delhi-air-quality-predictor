@@ -1,4 +1,4 @@
-# Vercel Python Deployment Guide
+# Vercel Deployment Guide
 
 ## Setup for Vercel Deployment
 
@@ -15,6 +15,8 @@ Go to Vercel Dashboard → Project Settings → Environment Variables
 Add:
 - **AQI_API_KEY** = Your WAQI API key from https://aqicn.org/api/
 
+If this variable is missing, the app returns a clear error payload instead of silently falling back to WAQI.
+
 ### 3. Deploy
 ```bash
 vercel --prod
@@ -24,16 +26,28 @@ vercel --prod
 
 ```
 /api
-  └── aqi.py          # Serverless function endpoint
+  └── index.py        # Canonical serverless function entrypoint
+/templates
+  └── index.html      # Canonical dashboard HTML
+/static
+  ├── css/style.css
+  └── js/app.js
 /public
-  └── index.html      # Frontend (auto-served by Vercel)
-vercel.json          # Vercel configuration
-requirements.txt     # Python dependencies
+  └── index.html      # Legacy dashboard kept for compatibility
+/legacy
+  ├── app.py
+  ├── flask_app.py
+  ├── aqi.py
+  ├── train_model.py
+  ├── Procfile
+  └── render.yaml
+vercel.json           # Vercel configuration
+requirements.txt      # Python dependencies for Vercel runtime
 ```
 
 ## API Endpoint
 
-**GET** `/api/aqi`
+**GET** `/api/current`
 
 **Response:**
 ```json
@@ -41,19 +55,22 @@ requirements.txt     # Python dependencies
   "status": "success",
   "aqi": 131,
   "category": "Unhealthy",
-  "city": "Delhi",
+  "color": "#ff0000",
+  "station": "Delhi",
   "timestamp": "2024-01-01 12:00:00"
 }
 ```
 
+Legacy compatibility is still available at **GET** `/api/aqi` for the archived public dashboard.
+
 ## Features
 
-✅ Serverless Python functions on Vercel  
-✅ Real-time AQI data from WAQI  
-✅ CORS enabled for frontend requests  
-✅ Environment variable support  
-✅ Error handling & fallback values  
-✅ Auto-refresh every 60 seconds  
+✅ Serverless Python functions on Vercel
+✅ Real-time AQI data from WAQI
+✅ CORS enabled for frontend requests
+✅ Environment variable support
+✅ Explicit error handling when AQI_API_KEY is missing
+✅ Auto-refresh every 5 minutes
 
 ## Testing Locally
 
@@ -63,3 +80,5 @@ vercel dev
 ```
 
 Then visit `http://localhost:3000`
+
+If you need the archived Render/Flask path, it now lives under `legacy/` and is not part of the Vercel deployment.
