@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Delhi Air Quality Index (AQI) | Air Pollution</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="mascot">
-                    <img src="{{ url_for('static', filename='images/mascot.png') }}" alt="Mascot" onerror="this.style.display='none'">
+                    <img src="/static/images/mascot.png" alt="Mascot" onerror="this.style.display='none'">
                 </div>
             </div>
 
@@ -122,6 +122,6 @@
         </main>
     </div>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="/static/js/app.js"></script>
 </body>
 </html>

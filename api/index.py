@@ -1,67 +1,37 @@
+cat > api/index.py << 'PYEOF'
 import os
 import json
-import requests
-from datetime import datetime
+import random
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler
-
-def get_aqi_from_pm25(pm25):
-    """Convert PM2.5 to AQI using US EPA standard"""
-    if pm25 <= 12.0:
-        return int((50 - 0) / (12.0 - 0.0) * (pm25 - 0.0) + 0)
-    elif pm25 <= 35.4:
-        return int((100 - 51) / (35.4 - 12.1) * (pm25 - 12.1) + 51)
-    elif pm25 <= 55.4:
-        return int((150 - 101) / (55.4 - 35.5) * (pm25 - 35.5) + 101)
-    elif pm25 <= 150.4:
-        return int((200 - 151) / (150.4 - 55.5) * (pm25 - 55.5) + 151)
-    elif pm25 <= 250.4:
-        return int((300 - 201) / (250.4 - 150.5) * (pm25 - 150.5) + 201)
-    else:
-        return int((500 - 301) / (500.4 - 250.5) * (pm25 - 250.5) + 301)
+import requests
 
 def get_aqi_category(aqi):
-    """Determine AQI category"""
-    if aqi <= 50:
-        return "Good"
-    elif aqi <= 100:
-        return "Moderate"
-    elif aqi <= 150:
-        return "Unhealthy for Sensitive Groups"
-    elif aqi <= 200:
-        return "Unhealthy"
-    elif aqi <= 300:
-        return "Very Unhealthy"
-    else:
-        return "Hazardous"
+    if aqi <= 50: return "Good"
+    elif aqi <= 100: return "Moderate"
+    elif aqi <= 150: return "Unhealthy for Sensitive Groups"
+    elif aqi <= 200: return "Unhealthy"
+    elif aqi <= 300: return "Very Unhealthy"
+    else: return "Hazardous"
 
 def get_aqi_color(aqi):
-    """Get color based on AQI"""
-    if aqi <= 50:
-        return "#00e400"
-    elif aqi <= 100:
-        return "#ffff00"
-    elif aqi <= 150:
-        return "#ff7e00"
-    elif aqi <= 200:
-        return "#ff0000"
-    elif aqi <= 300:
-        return "#8f3f97"
-    else:
-        return "#7e0023"
+    if aqi <= 50: return "#00e400"
+    elif aqi <= 100: return "#ffff00"
+    elif aqi <= 150: return "#ff7e00"
+    elif aqi <= 200: return "#ff0000"
+    elif aqi <= 300: return "#8f3f97"
+    else: return "#7e0023"
 
 def fetch_aqi_data():
-    """Fetch real-time AQI data from WAQI API"""
     try:
-        api_key = os.getenv("AQI_API_KEY", "4e84e711ecd384cb72016b0238185ae0a443dbe3")
+        api_key = os.getenv("AQI_API_KEY")
         url = f"https://api.waqi.info/feed/delhi/?token={api_key}"
         resp = requests.get(url, timeout=5)
         data = resp.json()
-        
         if data.get("status") == "ok":
             aqi_data = data["data"]
             iaqi = aqi_data.get("iaqi", {})
             aqi = aqi_data.get("aqi", 131)
-            
             return {
                 'aqi': aqi,
                 'category': get_aqi_category(aqi),
@@ -80,35 +50,67 @@ def fetch_aqi_data():
             }
     except Exception as e:
         print(f"API Error: {e}")
-    
-    # Fallback demo data
+
     aqi = 131
     return {
-        'aqi': aqi,
-        'category': get_aqi_category(aqi),
-        'color': get_aqi_color(aqi),
-        'pm25': 50,
-        'pm10': 65,
-        'co': 'N/A',
-        'no2': 'N/A',
-        'o3': 'N/A',
-        'so2': 'N/A',
-        'temperature': 22,
-        'humidity': 50,
-        'wind_speed': 7,
-        'timestamp': datetime.now().isoformat(),
-        'station': 'Delhi'
+        'aqi': aqi, 'category': get_aqi_category(aqi), 'color': get_aqi_color(aqi),
+        'pm25': 50, 'pm10': 65, 'co': 'N/A', 'no2': 'N/A', 'o3': 'N/A', 'so2': 'N/A',
+        'temperature': 22, 'humidity': 50, 'wind_speed': 7,
+        'timestamp': datetime.now().isoformat(), 'station': 'Delhi'
     }
+
+def generate_historical_data():
+    """Generate last 24 hours of sample AQI data for the chart"""
+    data = []
+    base_aqi = fetch_aqi_data()['aqi']
+    now = datetime.now()
+    for i in range(24, 0, -1):
+        t = now - timedelta(hours=i)
+        variation = random.randint(-20, 20)
+        aqi = max(20, base_aqi + variation)
+        data.append({
+            'timestamp': t.strftime('%H:%M'),
+            'aqi': aqi
+        })
+    return data
+
+def render_html():
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    template_path = os.path.join(base_dir, 'templates', 'index.html')
+    with open(template_path, 'r', encoding='utf-8') as f:
+        return f.read()
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # Enable CORS
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        
-        # Fetch and return AQI data
-        aqi_data = fetch_aqi_data()
-        self.wfile.write(json.dumps(aqi_data).encode())
+        path = self.path.split('?')[0]
+
+        if path == '/api/current':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(fetch_aqi_data()).encode())
+            return
+
+        if path == '/api/historical':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(generate_historical_data()).encode())
+            return
+
+        # Default: serve the HTML dashboard
+        try:
+            html = render_html()
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(html.encode())
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(f"Error loading page: {e}".encode())
         return
+PYEOF
