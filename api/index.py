@@ -1,4 +1,3 @@
-cat > api/index.py << 'PYEOF'
 import os
 import json
 import random
@@ -113,4 +112,3 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(f"Error loading page: {e}".encode())
         return
-PYEOF
