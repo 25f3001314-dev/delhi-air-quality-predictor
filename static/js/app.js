@@ -9,9 +9,9 @@ async function fetchCurrentAQI() {
         document.getElementById('categoryValue').textContent = data.category;
         document.getElementById('pm25Value').textContent = data.pm25;
         document.getElementById('pm10Value').textContent = data.pm10;
-        document.getElementById('temperature').textContent = data.temperature;
-        document.getElementById('humidity').textContent = data.humidity + ' %';
-        document.getElementById('windSpeed').textContent = data.wind_speed + ' km/h';
+        document.getElementById('temperature').textContent = Math.round(data.temperature * 10) / 10;
+        document.getElementById('humidity').textContent = Math.round(data.humidity) + ' %';
+        document.getElementById('windSpeed').textContent = (Math.round(data.wind_speed * 10) / 10) + ' km/h';
         document.getElementById('lastUpdated').textContent = data.timestamp;
         
         // Update colors based on AQI
